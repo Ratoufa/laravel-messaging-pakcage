@@ -10,3 +10,10 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    ignoreErrors:
+        # Package config file - env() is correct here, Larastan thinks it's outside config dir
+        - identifier: larastan.noEnvCallsOutsideOfConfig
+          path: config/messaging.php
+        # Trait is meant to be used by package consumers
+        - identifier: trait.unused
+          path: src/Concerns/HasMessaging.php

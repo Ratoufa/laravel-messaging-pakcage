@@ -2,7 +2,11 @@
     "preset": "laravel",
     "ignore": {
         "words": [
-            "php"
+            "php",
+            "afrik",
+            "afriksms",
+            "twilio",
+            "whatsapp"
         ],
         "paths": []
     }
