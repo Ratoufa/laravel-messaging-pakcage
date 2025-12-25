@@ -1,12 +1,14 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+declare(strict_types=1);
+
+namespace Ratoufa\Messaging\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+final class MessagingCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-messaging';
 
     public $description = 'My command';
 

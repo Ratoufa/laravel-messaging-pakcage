@@ -1,47 +1,46 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
-    "keywords": [
-        ":vendor_name",
-        "laravel",
-        ":package_slug"
-    ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "name": "ratoufa/laravel-messaging",
+    "description": "Multi-channel messaging for Laravel (SMS via AfrikSMS, WhatsApp via Twilio)",
+    "keywords": ["laravel", "sms", "whatsapp", "twilio", "afriksms", "otp", "notifications", "africa", "togo"],
+    "homepage": "https://github.com/Ratoufa/laravel-messaging-pakcage",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Just Chris",
+            "email": "chrissem19@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0"
+        "illuminate/contracts": "^11.0||^12.0",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
-        "laravel/pint": "^1.14",
-        "nunomaduro/collision": "^8.8",
         "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.26",
+        "nunomaduro/collision": "^8.8",
         "orchestra/testbench": "^10.0.0||^9.0.0",
-        "pestphp/pest": "^4.0",
+        "peckphp/peck": "^0.2.0",
+        "pestphp/pest": "^4.2",
         "pestphp/pest-plugin-arch": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-type-coverage": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
+        "rector/rector": "^2.2",
         "spatie/laravel-ray": "^1.35"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Ratoufa\\Messaging\\": "src/",
+            "Ratoufa\\Messaging\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "Ratoufa\\Messaging\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -49,9 +48,28 @@
         "post-autoload-dump": "@composer run prepare",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "analyse": "vendor/bin/phpstan analyse",
-        "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
+        "test:type-coverage": "pest --parallel --type-coverage --exactly=100",
+        "lint": "pint --parallel",
+        "refactor": "rector",
+        "test:typos": "peck",
+        "test:lint": "pint --parallel --test",
+        "test:unit": "pest --parallel",
+        "test:unit:coverage": "pest --parallel --coverage --exactly=100",
+        "test:types": "phpstan",
+        "test:refactor": "rector --dry-run",
+        "fix": [
+            "@test:types",
+            "@refactor",
+            "@lint"
+        ],
+        "test": [
+            "@test:lint",
+            "@test:type-coverage",
+            "@test:typos",
+            "@test:unit",
+            "@test:types",
+            "@test:refactor"
+        ]
     },
     "config": {
         "sort-packages": true,
@@ -63,10 +81,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Ratoufa\\Messaging\\MessagingServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Messaging": "Ratoufa\\Messaging\\Facades\\Messaging"
             }
         }
     },
