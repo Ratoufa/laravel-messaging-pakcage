@@ -17,6 +17,7 @@ use Ratoufa\Messaging\Gateways\AfrikSmsGateway;
 use Ratoufa\Messaging\Gateways\TwilioWhatsAppGateway;
 use Ratoufa\Messaging\Notifications\SmsChannel;
 use Ratoufa\Messaging\Notifications\WhatsAppChannel;
+use Ratoufa\Messaging\Services\OtpManager;
 use Ratoufa\Messaging\Services\OtpService;
 use Ratoufa\Messaging\Services\SmsManager;
 use Spatie\LaravelPackageTools\Package;
@@ -82,6 +83,13 @@ final class MessagingServiceProvider extends PackageServiceProvider
 
         $this->app->singleton(OtpService::class, fn (Container $app): OtpService => new OtpService(
             $app->make(SmsManager::class),
+            $app->make(CacheRepository::class),
+            $app->make(ConfigRepository::class),
+        ));
+
+        $this->app->singleton(OtpManager::class, fn (Container $app): OtpManager => new OtpManager(
+            $app->make(AfrikSmsGateway::class),
+            $app->make(TwilioWhatsAppGateway::class),
             $app->make(CacheRepository::class),
             $app->make(ConfigRepository::class),
         ));

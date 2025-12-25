@@ -71,10 +71,10 @@ describe('Messaging facade', function (): void {
         expect($smsManager)->toBeInstanceOf(SmsManager::class);
     });
 
-    it('provides otp service', function (): void {
+    it('provides otp manager', function (): void {
         $otp = Messaging::otp();
 
-        expect($otp)->toBeInstanceOf(Ratoufa\Messaging\Services\OtpService::class);
+        expect($otp)->toBeInstanceOf(Ratoufa\Messaging\Services\OtpManager::class);
     });
 
     it('provides fluent sms builder', function (): void {

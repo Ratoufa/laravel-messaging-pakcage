@@ -14,7 +14,7 @@ use Ratoufa\Messaging\Gateways\AfrikSmsGateway;
 use Ratoufa\Messaging\Gateways\TwilioWhatsAppGateway;
 use Ratoufa\Messaging\Pending\PendingSms;
 use Ratoufa\Messaging\Pending\PendingWhatsApp;
-use Ratoufa\Messaging\Services\OtpService;
+use Ratoufa\Messaging\Services\OtpManager;
 use Ratoufa\Messaging\Services\SmsManager;
 
 final class Messaging
@@ -49,9 +49,9 @@ final class Messaging
         return new PendingSms($this->sms(), $phone);
     }
 
-    public function otp(): OtpService
+    public function otp(): OtpManager
     {
-        return $this->container->make(OtpService::class);
+        return $this->container->make(OtpManager::class);
     }
 
     public function whatsapp(): SmsManager

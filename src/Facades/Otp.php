@@ -6,9 +6,13 @@ namespace Ratoufa\Messaging\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Ratoufa\Messaging\Data\OtpResult;
+use Ratoufa\Messaging\Services\OtpManager;
 use Ratoufa\Messaging\Services\OtpService;
 
 /**
+ * @method static OtpService channel(string $channel)
+ * @method static OtpService sms()
+ * @method static OtpService whatsapp()
  * @method static OtpResult send(string $phone, string $purpose = 'verification')
  * @method static bool verify(string $phone, string $code, string $purpose = 'verification')
  * @method static OtpResult resend(string $phone, string $purpose = 'verification')
@@ -16,12 +20,12 @@ use Ratoufa\Messaging\Services\OtpService;
  * @method static int remainingAttempts(string $phone, string $purpose = 'verification')
  * @method static void invalidate(string $phone, string $purpose = 'verification')
  *
- * @see OtpService
+ * @see OtpManager
  */
 final class Otp extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return OtpService::class;
+        return OtpManager::class;
     }
 }
