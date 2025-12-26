@@ -6,6 +6,7 @@ namespace Ratoufa\Messaging\Services;
 
 use Illuminate\Support\Collection;
 use Ratoufa\Messaging\Contracts\GatewayInterface;
+use Ratoufa\Messaging\Contracts\OtpSenderInterface;
 use Ratoufa\Messaging\Contracts\SmsGatewayInterface;
 use Ratoufa\Messaging\Data\BalanceInfo;
 use Ratoufa\Messaging\Data\BulkMessage;
@@ -16,7 +17,7 @@ use Ratoufa\Messaging\Exceptions\MessagingException;
 use Ratoufa\Messaging\Pending\PendingBulkSms;
 use Ratoufa\Messaging\Pending\PendingSms;
 
-final readonly class SmsManager
+final readonly class SmsManager implements OtpSenderInterface
 {
     public function __construct(
         private GatewayInterface $gateway,

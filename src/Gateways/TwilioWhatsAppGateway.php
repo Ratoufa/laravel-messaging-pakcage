@@ -223,6 +223,7 @@ final readonly class TwilioWhatsAppGateway implements WhatsAppGatewayInterface
             20003, 401 => ResponseCode::INVALID_CREDENTIALS,
             21211, 21614 => ResponseCode::INVALID_RECIPIENT,
             21608, 21610, 21612 => ResponseCode::INSUFFICIENT_BALANCE,
+            63016 => ResponseCode::TEMPLATE_REQUIRED,
             default => ResponseCode::UNKNOWN,
         };
 

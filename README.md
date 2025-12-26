@@ -193,6 +193,29 @@ $response = WhatsApp::sendMedia(
 );
 ```
 
+#### Using the fluent API with templates
+
+> **Note:** WhatsApp has a 24-hour messaging window. You can send freeform messages only within 24 hours after the user's last reply. After that, you must use a pre-approved Message Template.
+
+```php
+use Ratoufa\Messaging\Facades\WhatsApp;
+
+// Fluent template with variables
+$response = WhatsApp::to('22890123456')
+    ->template('HXb5a34a7e18eb123456789', ['1' => 'John', '2' => 'Order #12345'])
+    ->send();
+
+// Template without variables
+$response = WhatsApp::to('22890123456')
+    ->template('HXb5a34a7e18eb123456789')
+    ->send();
+
+// Fluent media with caption
+$response = WhatsApp::to('22890123456')
+    ->media('https://example.com/image.jpg')
+    ->send('Check this out!');
+```
+
 ### OTP Verification
 
 #### Send OTP
@@ -250,6 +273,28 @@ use Ratoufa\Messaging\Facades\Otp;
 Otp::invalidate('22890123456');
 ```
 
+#### Send OTP via WhatsApp
+
+> **Note:** WhatsApp OTP uses a pre-approved Message Template to ensure delivery even outside the 24-hour messaging window. You must configure the template SID in your `.env` file.
+
+```env
+TWILIO_OTP_TEMPLATE_SID=HXxxxxxxxxxxxxxxxxx
+TWILIO_OTP_CODE_VARIABLE=1
+```
+
+```php
+use Ratoufa\Messaging\Facades\Otp;
+
+// Send OTP via WhatsApp (uses template)
+$result = Otp::whatsapp()->send('22890123456');
+
+// Verify OTP (same as SMS)
+$isValid = Otp::whatsapp()->verify('22890123456', '123456');
+
+// Resend OTP via WhatsApp
+$result = Otp::whatsapp()->resend('22890123456');
+```
+
 ### Using the Messaging Facade
 
 The `Messaging` facade provides access to all channels:
@@ -295,6 +340,7 @@ ResponseCode::SUCCESS              // 100
 ResponseCode::INVALID_CREDENTIALS  // 401
 ResponseCode::INSUFFICIENT_BALANCE // 402
 ResponseCode::INVALID_RECIPIENT    // 422
+ResponseCode::TEMPLATE_REQUIRED    // 463 (WhatsApp 24h window expired)
 ResponseCode::SERVER_ERROR         // 500
 ```
 

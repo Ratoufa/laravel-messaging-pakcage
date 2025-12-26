@@ -12,6 +12,7 @@ enum ResponseCode: int
     case INSUFFICIENT_BALANCE = 402;
     case INVALID_RECIPIENT = 422;
     case SERVER_ERROR = 500;
+    case TEMPLATE_REQUIRED = 463;
     case UNSUPPORTED_OPERATION = 501;
     case UNKNOWN = 999;
 
@@ -33,6 +34,7 @@ enum ResponseCode: int
             self::INVALID_CREDENTIALS => 'Invalid API credentials',
             self::INSUFFICIENT_BALANCE => 'Insufficient balance or quota exceeded',
             self::INVALID_RECIPIENT => 'Invalid recipient phone number',
+            self::TEMPLATE_REQUIRED => 'WhatsApp 24-hour session window expired. Use a Message Template.',
             self::SERVER_ERROR => 'Server error occurred',
             self::UNSUPPORTED_OPERATION => 'Operation not supported by this gateway',
             self::UNKNOWN => 'Unknown error occurred',
