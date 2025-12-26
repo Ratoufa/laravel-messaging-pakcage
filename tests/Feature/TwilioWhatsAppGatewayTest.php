@@ -218,3 +218,61 @@ describe('getBalance', function (): void {
         expect($balances->first()->country)->toBe('Twilio Account');
     });
 });
+
+describe('error handling', function (): void {
+    it('returns TEMPLATE_REQUIRED for error 63016 (24h window expired)', function (): void {
+        // Create a mock gateway that simulates the 63016 error
+        $mockGateway = new readonly class implements WhatsAppGatewayInterface
+        {
+            public function send(SmsMessage $message): Response
+            {
+                return new Response(
+                    success: false,
+                    code: ResponseCode::TEMPLATE_REQUIRED,
+                    message: 'Failed to send freeform message because you are outside the allowed window.',
+                    data: ['error_code' => 63016],
+                );
+            }
+
+            public function sendBulk(BulkMessage $message): Response
+            {
+                return new Response(success: false, code: ResponseCode::UNKNOWN, message: 'Error');
+            }
+
+            public function sendPersonalized(array $messages, ?string $senderId = null): Response
+            {
+                return new Response(success: false, code: ResponseCode::UNKNOWN, message: 'Error');
+            }
+
+            public function getBalance(): Illuminate\Support\Collection
+            {
+                return collect([]);
+            }
+
+            public function sendTemplate(string $recipient, string $contentSid, array $variables = []): Response
+            {
+                return new Response(success: true, code: ResponseCode::SUCCESS, message: 'Template sent');
+            }
+
+            public function sendMedia(string $recipient, string $mediaUrl, ?string $caption = null): Response
+            {
+                return new Response(success: false, code: ResponseCode::UNKNOWN, message: 'Error');
+            }
+        };
+
+        app()->instance(WhatsAppGatewayInterface::class, $mockGateway);
+
+        $response = WhatsApp::to('22890123456')->send('Hello!');
+
+        expect($response->success)->toBeFalse();
+        expect($response->code)->toBe(ResponseCode::TEMPLATE_REQUIRED);
+        expect($response->data['error_code'])->toBe(63016);
+    });
+
+    it('has TEMPLATE_REQUIRED code with proper description', function (): void {
+        $description = ResponseCode::TEMPLATE_REQUIRED->description();
+
+        expect($description)->toContain('24-hour');
+        expect($description)->toContain('Template');
+    });
+});

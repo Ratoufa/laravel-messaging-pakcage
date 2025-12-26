@@ -6,8 +6,10 @@ namespace Ratoufa\Messaging\Services;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Ratoufa\Messaging\Contracts\OtpSenderInterface;
 use Ratoufa\Messaging\Data\OtpResult;
 use Ratoufa\Messaging\Data\SmsMessage;
+use Ratoufa\Messaging\Enums\Channel;
 
 final readonly class OtpService
 {
@@ -20,9 +22,10 @@ final readonly class OtpService
     private string $messageTemplate;
 
     public function __construct(
-        private SmsManager $smsManager,
+        private OtpSenderInterface $sender,
         private CacheRepository $cache,
         private ConfigRepository $config,
+        private Channel $channel = Channel::SMS,
     ) {
         $this->length = $this->config->get('messaging.otp.length', 6);
         $this->expiryMinutes = $this->config->get('messaging.otp.expiry_minutes', 10);
@@ -48,8 +51,10 @@ final readonly class OtpService
             now()->addMinutes($this->expiryMinutes)
         );
 
-        $message = $this->buildMessage($code);
-        $response = $this->smsManager->send(new SmsMessage($phone, $message));
+        // For WhatsApp templates: send just the code (template handles the message format)
+        // For SMS: send the full formatted message
+        $content = $this->channel->isWhatsApp() ? $code : $this->buildMessage($code);
+        $response = $this->sender->send(new SmsMessage($phone, $content));
 
         return new OtpResult(
             success: $response->success,

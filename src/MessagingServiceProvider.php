@@ -89,7 +89,7 @@ final class MessagingServiceProvider extends PackageServiceProvider
 
         $this->app->singleton(OtpManager::class, fn (Container $app): OtpManager => new OtpManager(
             $app->make(AfrikSmsGateway::class),
-            $app->make(TwilioWhatsAppGateway::class),
+            $app->make(WhatsAppGatewayInterface::class),
             $app->make(CacheRepository::class),
             $app->make(ConfigRepository::class),
         ));

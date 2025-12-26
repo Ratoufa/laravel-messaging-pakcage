@@ -7,10 +7,11 @@ namespace Ratoufa\Messaging\Services;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use InvalidArgumentException;
+use Ratoufa\Messaging\Contracts\WhatsAppGatewayInterface;
 use Ratoufa\Messaging\Data\OtpResult;
 use Ratoufa\Messaging\Enums\Channel;
+use Ratoufa\Messaging\Exceptions\MessagingException;
 use Ratoufa\Messaging\Gateways\AfrikSmsGateway;
-use Ratoufa\Messaging\Gateways\TwilioWhatsAppGateway;
 
 final class OtpManager
 {
@@ -19,7 +20,7 @@ final class OtpManager
 
     public function __construct(
         private readonly AfrikSmsGateway $afrikSmsGateway,
-        private readonly TwilioWhatsAppGateway $twilioWhatsAppGateway,
+        private readonly WhatsAppGatewayInterface $whatsAppGateway,
         private readonly CacheRepository $cache,
         private readonly ConfigRepository $config,
     ) {}
@@ -83,16 +84,34 @@ final class OtpManager
             return $this->services[$key];
         }
 
-        $gateway = match ($channel) {
-            Channel::SMS => $this->afrikSmsGateway,
-            Channel::WHATSAPP => $this->twilioWhatsAppGateway,
+        $sender = match ($channel) {
+            Channel::SMS => new SmsManager($this->afrikSmsGateway),
+            Channel::WHATSAPP => $this->createWhatsAppOtpSender(),
         };
 
-        $manager = new SmsManager($gateway);
-        $service = new OtpService($manager, $this->cache, $this->config);
+        $service = new OtpService($sender, $this->cache, $this->config, $channel);
 
         $this->services[$key] = $service;
 
         return $service;
+    }
+
+    private function createWhatsAppOtpSender(): WhatsAppOtpSender
+    {
+        /** @var string|null $templateSid */
+        $templateSid = $this->config->get('messaging.otp.whatsapp.template_sid');
+
+        if ($templateSid === null || $templateSid === '') {
+            throw MessagingException::configurationMissing('messaging.otp.whatsapp.template_sid');
+        }
+
+        /** @var string $codeVariable */
+        $codeVariable = $this->config->get('messaging.otp.whatsapp.code_variable', '1');
+
+        return new WhatsAppOtpSender(
+            gateway: $this->whatsAppGateway,
+            templateSid: $templateSid,
+            codeVariable: $codeVariable,
+        );
     }
 }

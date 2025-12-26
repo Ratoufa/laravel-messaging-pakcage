@@ -68,6 +68,11 @@ return [
         'expiry_minutes' => (int) env('MESSAGING_OTP_EXPIRY', 10),
         'max_attempts' => (int) env('MESSAGING_OTP_MAX_ATTEMPTS', 3),
         'message' => env('MESSAGING_OTP_MESSAGE', 'Your verification code is: {code}. Valid for {expiry} minutes.'),
+
+        'whatsapp' => [
+            'template_sid' => env('TWILIO_OTP_TEMPLATE_SID'),
+            'code_variable' => env('TWILIO_OTP_CODE_VARIABLE', '1'),
+        ],
     ],
 
     /*
